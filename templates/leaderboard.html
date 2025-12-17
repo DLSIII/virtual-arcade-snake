@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Leaderboard - Virtual Arcade</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <h1 style="margin:0;">🏆 Leaderboard</h1>
+    <div class="right">
+      <span class="pill">Player: <b>{{ user }}</b></span>
+      <a class="linkbtn" href="/">Play</a>
+      <a class="linkbtn" href="/.auth/logout?post_logout_redirect_uri=/login">Logout</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <button id="refresh">Refresh</button>
+    <pre id="list" style="margin-top:12px;">Loading...</pre>
+  </div>
+</div>
+
+<script>
+async function load(){
+  const r = await fetch("/api/leaderboard?limit=10");
+  const j = await r.json();
+  if(!j.ok){ document.getElementById("list").textContent = "Error: " + j.error; return; }
+  document.getElementById("list").textContent =
+    j.items.map((x,i)=>`${i+1}. ${x.user} — ${x.score}`).join("\n") || "(no scores yet)";
+}
+document.getElementById("refresh").onclick = load;
+load();
+</script>
+</body>
+</html>
